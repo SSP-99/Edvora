@@ -1,0 +1,18 @@
+/* src/main/resources/static/css/style.css */
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+.pomodoro-display {
+    font-size: 5rem;
+    font-weight: 800;
+    color: #212529;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -2px;
+}
+.card {
+    border-radius: 12px;
+}
+.progress {
+    border-radius: 6px;
+    background-color: #e9ecef;
+}

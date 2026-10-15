@@ -1,0 +1,122 @@
+<!-- src/main/resources/templates/dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{layout :: head('Dashboard')}"></head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container mt-4">
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h2 class="mb-0 fw-bold">Welcome back, <span th:text="${user.fullName}">Student</span></h2>
+                <small class="text-muted">Daily target hours: <span th:text="${user.dailyStudyHours}">4.0</span> hours</small>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="card bg-primary text-white h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-center text-center">
+                        <h6 class="text-uppercase tracking-wide opacity-75 mb-1">Current Streak</h6>
+                        <h1 class="display-4 fw-bold mb-0"><span th:text="${dashboard.streak}">0</span> 🔥</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-success text-white h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-center text-center">
+                        <h6 class="text-uppercase tracking-wide opacity-75 mb-1">Productivity Score</h6>
+                        <h1 class="display-4 fw-bold mb-0"><span th:text="${dashboard.productivityScore}">0</span>%</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3 fw-bold">Active Exam Countdowns</h4>
+        <div class="row mb-4" id="countdown-list">
+            <div class="col-md-4 mb-3" th:each="exam : ${dashboard.countdowns}">
+                <div class="card h-100 shadow-sm border-start border-4 border-warning exam-card" th:data-exam-time="${exam.examId}">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-1" th:text="${exam.examName}">Exam Name</h5>
+                        <p class="text-muted small mb-3" th:text="${exam.subjectName}">Subject Name</p>
+                        <div th:if="${exam.expired}" class="text-danger fw-bold">Exam Expired</div>
+                        <div th:unless="${exam.expired}" th:id="'cd-' + ${exam.examId}" class="fs-5 fw-bold text-dark">
+                            <span th:text="${exam.daysLeft}">0</span>d <span th:text="${exam.hoursLeft}">0</span>h left
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12" th:if="${#lists.isEmpty(dashboard.countdowns)}">
+                <p class="text-muted bg-white p-3 border rounded shadow-sm">No upcoming exams tracked.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-dark text-white fw-bold">Today's Sessions</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Topic</th>
+                                        <th>Type</th>
+                                        <th>Target</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${dashboard.todaySessions}">
+                                        <td class="fw-medium" th:text="${s.topic.title}">Topic Title</td>
+                                        <td><span class="badge bg-secondary" th:text="${s.type}">STUDY</span></td>
+                                        <td th:text="${s.plannedMinutes} + 'm'">45m</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${s.status.name() == 'DONE' ? 'bg-success' : (s.status.name() == 'MISSED' ? 'bg-danger' : 'bg-warning text-dark')}" th:text="${s.status}">PLANNED</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(dashboard.todaySessions)}">
+                                        <td colspan="4" class="text-center text-muted py-4">No scheduled sessions for today.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-dark text-white fw-bold">Coverage Predictions</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Needed</th>
+                                        <th>Available</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="p : ${dashboard.predictions}">
+                                        <td class="fw-medium" th:text="${p.subjectName}">Subject Name</td>
+                                        <td th:text="${p.remainingHours} + 'h'">12h</td>
+                                        <td th:text="${p.availableHours} + 'h'">15h</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${p.status == 'ON_TRACK' ? 'bg-success' : 'bg-danger'}" th:text="${p.status}">ON_TRACK</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(dashboard.predictions)}">
+                                        <td colspan="4" class="text-center text-muted py-4">No prediction analysis active.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

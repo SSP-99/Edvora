@@ -1,0 +1,95 @@
+<!-- src/main/resources/templates/analytics.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edvora - Analytics</title>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <div class="container my-5">
+        <h2 class="fw-bold text-dark mb-4">Performance Analytics</h2>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-primary mb-4">Weekly Study Output</h5>
+                        <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-success mb-4">Subject Syllabus Coverage</h5>
+                        <div th:if="${#lists.isEmpty(progress)}" class="text-center py-5 text-muted">
+                            Add subjects and complete topics to view syllabus tracking.
+                        </div>
+                        <div th:each="p : ${progress}" class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark" th:text="${p.subjectName}">Subject Name</span>
+                                <span class="text-muted small" th:text="${p.completedTopics + '/' + p.totalTopics + ' Topics (' + p.percent + '%)'}">0/0 Topics (0%)</span>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" 
+                                     th:style="'width: ' + ${p.percent} + '%'" 
+                                     th:aria-valuenow="${p.percent}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/api/analytics/weekly')
+                .then(response => response.json())
+                .then(data => {
+                    const sortedDates = Object.keys(data).sort();
+                    const minutes = sortedDates.map(date => data[date]);
+                    const labels = sortedDates.map(date => {
+                        const d = new Date(date);
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+                    });
+
+                    const ctx = document.getElementById('weeklyChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Study Time (Minutes)',
+                                data: minutes,
+                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1,
+                                borderRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Minutes' }
+                                }
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
+    <script src="https://jsdelivr.net"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!-- src/main/resources/templates/topics.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{layout :: head('Subject Topics')}"></head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/subjects}">Subjects</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${subject.name}">Subject Name</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold">Add Topic</div>
+                    <div class="card-body">
+                        <form th:action="@{/subjects/{id}/topics/add(id=${subject.id})}" method="post">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Topic Title</label>
+                                <input type="text" id="title" name="title" class="form-control" required placeholder="e.g. Transaction Logs">
+                            </div>
+                            <div class="mb-4">
+                                <label for="estimatedHours" class="form-label">Estimated Preparation Time (Hours)</label>
+                                <input type="number" id="estimatedHours" name="estimatedHours" class="form-control" step="0.5" min="0.5" required placeholder="2.5">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Topic</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                        <span th:text="${subject.name} + ' Topics'">Topics</span>
+                        <span class="badge bg-light text-dark" th:text="${#lists.size(topics)} + ' Total'">0 Total</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Title</th>
+                                        <th>Est. Hours</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="t : ${topics}">
+                                        <td class="ps-3 fw-medium" th:text="${t.title}">Topic Title</td>
+                                        <td th:text="${t.estimatedHours} + ' hrs'">3.0 hrs</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${t.status.name() == 'COMPLETED' ? 'bg-success' : (t.status.name() == 'IN_PROGRESS' ? 'bg-info text-dark' : 'bg-secondary')}" th:text="${t.status}">PENDING</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <div class="d-inline-flex gap-2 justify-content-end">
+                                                <form th:if="${t.status.name() != 'COMPLETED'}" th:action="@{/topics/complete/{id}(id=${t.id})}" method="post" class="m-0">
+                                                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                                                </form>
+                                                <form th:action="@{/topics/delete/{id}(id=${t.id})}" method="post" class="m-0">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topics)}">
+                                        <td colspan="4" class="text-center text-muted py-4">No topics mapped under this subject.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

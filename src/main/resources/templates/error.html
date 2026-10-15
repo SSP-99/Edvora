@@ -1,0 +1,20 @@
+<!-- src/main/resources/templates/error.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{layout :: head('Error')}"></head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card shadow border-0 p-5">
+                    <h1 class="display-1 text-danger fw-bold">⚠️</h1>
+                    <h2 class="fw-bold text-dark mt-3">An Error Occurred</h2>
+                    <p class="text-muted my-3" th:text="${message != null ? message : 'The application encountered an unexpected issue.'}">An error occurred while handling your tracking lifecycle transaction.</p>
+                    <a th:href="@{/}" class="btn btn-primary px-4 py-2 mt-2">Return Home Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

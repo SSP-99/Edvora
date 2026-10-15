@@ -1,0 +1,76 @@
+<!-- src/main/resources/templates/exams.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{layout :: head('Upcoming Exams')}"></head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold">Schedule Exam</div>
+                    <div class="card-body">
+                        <form th:action="@{/exams/add}" method="post">
+                            <div class="mb-3">
+                                <label for="subjectId" class="form-label">Target Subject</label>
+                                <select id="subjectId" name="subjectId" class="form-select" required>
+                                    <option value="" disabled selected>Choose a subject</option>
+                                    <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.name}">Subject Name</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Exam Name / Code</label>
+                                <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. Midterm Assessment">
+                            </div>
+                            <div class="mb-4">
+                                <label for="examDateTime" class="form-label">Date & Time</label>
+                                <input type="datetime-local" id="examDateTime" name="examDateTime" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Schedule Exam</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold">Upcoming Exam Deadlines</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Exam Details</th>
+                                        <th>Remaining Period</th>
+                                        <th class="text-end pe-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${countdowns}">
+                                        <td class="ps-3">
+                                            <div class="fw-bold" th:text="${c.examName}">Exam Name</div>
+                                            <small class="text-muted" th:text="${c.subjectName}">Subject Name</small>
+                                        </td>
+                                        <td>
+                                            <span th:if="${c.expired}" class="badge bg-danger">Expired</span>
+                                            <span th:unless="${c.expired}" class="fw-semibold text-dark" th:text="${c.daysLeft} + 'd ' + ${c.hoursLeft} + 'h left'">0d 0h left</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <form th:action="@{/exams/delete/{id}(id=${c.examId})}" method="post" class="m-0">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(countdowns)}">
+                                        <td colspan="3" class="text-center text-muted py-4">No exams recorded. Ready for scheduling.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

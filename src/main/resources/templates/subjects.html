@@ -1,0 +1,72 @@
+<!-- src/main/resources/templates/subjects.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{layout :: head('Manage Subjects')}"></head>
+<body class="bg-light">
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold">Add Subject</div>
+                    <div class="card-body">
+                        <form th:action="@{/subjects/add}" method="post">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Subject Name</label>
+                                <input type="text" id="name" name="name" class="form-control" required placeholder="e.g. Distributed Systems">
+                            </div>
+                            <div class="mb-4">
+                                <label for="difficulty" class="form-label">Difficulty Tier</label>
+                                <select id="difficulty" name="difficulty" class="form-select" required>
+                                    <option th:each="d : ${difficulties}" th:value="${d}" th:text="${d}">MEDIUM</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Subject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white fw-bold">Registered Subjects</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Name</th>
+                                        <th>Difficulty</th>
+                                        <th class="text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="s : ${subjects}">
+                                        <td class="ps-3">
+                                            <a th:href="@{/subjects/{id}/topics(id=${s.id})}" class="fw-bold text-decoration-none text-dark d-block" th:text="${s.name}">Subject Name</a>
+                                        </td>
+                                        <td>
+                                            <span class="badge" th:classappend="${s.difficulty.name() == 'HARD' ? 'bg-danger' : (s.difficulty.name() == 'MEDIUM' ? 'bg-warning text-dark' : 'bg-success')}" th:text="${s.difficulty}">MEDIUM</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <div class="d-inline-flex gap-2 justify-content-end">
+                                                <a th:href="@{/subjects/{id}/topics(id=${s.id})}" class="btn btn-outline-primary btn-sm">View Topics</a>
+                                                <form th:action="@{/subjects/delete/{id}(id=${s.id})}" method="post" class="m-0" onsubmit="return confirm('Delete subject and all its related topics?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(subjects)}">
+                                        <td colspan="3" class="text-center text-muted py-4">No subjects added yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
